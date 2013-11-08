@@ -2,7 +2,14 @@
 
 This gem provides a rudimentary interface to Shopify's backend API by simulating a backend user authenticating via the web interface. The backend JSON endpoints can then be accessed easily.
 
-__This is a proof of concept, use at your own risk.__
+Credit where credit is due, Martin Amps figured it out before me:
+[Reverse engineering Shopify private APIs](http://ma.rtin.so/reverse-engineering-shopify-private-apis)
+
+Couldn't have done it without his work, thanks!
+
+## A word of warning
+
+__This is a proof of concept, use at your own risk. It is not officially supported by Shopify, if you break anything it's entirely on you__
 
 ## Installation
 

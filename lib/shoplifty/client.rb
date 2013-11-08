@@ -5,6 +5,7 @@ module Shoplifty
     def initialize(shopname, username, password, options = {})
       options = { :cookie_jar => 'cookie_jar' }.merge(options)
       admin_url = "https://#{shopname}.myshopify.com/admin"
+      
       @agent = Mechanize.new
       
       if (File.exists?(options[:cookie_jar]))
