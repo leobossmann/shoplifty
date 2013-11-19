@@ -33,7 +33,9 @@ Now you can access backend resources:
     shoplifty.get('/admin/shop_policies.json')
     shoplifty.post('/admin/shop_policies.json', your_payload)
 
-you also can access (some) resources directly (Warning: This does *not* work for all resources, YMMV)
+Have a look at what gets sent around in the backend with Firebug or similar tools, the Backend API is pretty straightforward.
+
+you also can access (some) resources like this (Warning: This does *not* work for all resources, YMMV)
 
     last_email_template = shoplifty.email_templates.last
 
@@ -51,7 +53,30 @@ you also can access (some) resources directly (Warning: This does *not* work for
 
 As a rule of thumb, everything that is a list of similar items (countries, email_templates etc.) can be accessed this way.
 
-Have a look at what gets sent around in the backend with Firebug or similar tools, the Backend API is pretty straightforward.
+## Mail Notifications
+
+There is class called "MailNotifications" that provides easy access to shopify's email templates:
+
+    email_templates = Shoplifty::MailNotifications.new
+    email_templates.fulfillment_request.body = 'Test again'
+    email_templates.fulfillment_request.save
+
+Mail notifications, as of now, are:
+
+* order_confirmation
+* new_order_notification
+* new_order_notification_mobile
+* shipping_confirmation
+* shipping_update
+* contact_buyer
+* order_cancelled
+* customer_account_activation
+* customer_password_reset
+* customer_account_welcome
+* fulfillment_request
+
+
+## Cookie settings
 
 The client will create a file called 'cookie_jar' in your app's directory, if you want to have it at another location you can pass in a different filename:
 
