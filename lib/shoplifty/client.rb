@@ -1,6 +1,20 @@
 require 'mechanize'
+require 'active_support/inflector'
 
 module Shoplifty
+  class << self
+    def setup(shopname, username, password, options = {})
+      Shoplifty.client = Shoplifty::Client.new(shopname, username, password, options)
+    end
+    def client
+      @client
+    end
+
+    def client=(client)
+      @client = client
+    end
+  end
+
   class Client
     def initialize(shopname, username, password, options = {})
       options = { :cookie_jar => 'cookie_jar' }.merge(options)
@@ -39,7 +53,37 @@ module Shoplifty
     end
 
     def post(url, payload)
-      @agent.post(url, payload.to_json, @headers)
+     @agent.post(url, payload.to_json, @headers)
+    end
+
+    def put(url, payload)
+     @agent.put(url, payload.to_json, @headers)
+    end
+
+    def method_missing(m)
+      raw_data = get("/admin/#{m}.json")
+      processed_data = []
+
+      raw_data[m.to_s].each do |n|
+        processed_data << Shoplifty::ShopifyEntity.new(m, n)
+      end
+
+      processed_data
+    end
+  end
+
+  class ShopifyEntity
+    def initialize(entity, args = {})
+      @entity = entity
+      args.each do |k, v|
+        # http://pullmonkey.com/2008/01/06/convert-a-ruby-hash-into-a-class-object/
+        self.instance_variable_set("@#{k}", v)
+        self.class.send(:define_method, k, proc{self.instance_variable_get("@#{k}")})
+        self.class.send(:define_method, "#{k}=", proc{|v| self.instance_variable_set("@#{k}", v)})
+      end
+    end
+    def save
+      Shoplifty.client.put("/admin/#{@entity}/#{id}.json", { @entity.to_s.singularize => self })
     end
   end
 end

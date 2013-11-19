@@ -26,18 +26,37 @@ And then execute:
 Initialize the client:
 
     require 'shoplifty'
-    shoplifty = Shoplifty::Client.new('shopname', 'username', 'password')
+    shoplifty = Shoplifty.setup('shopname', 'username', 'password')
 
 Now you can access backend resources:
 
     shoplifty.get('/admin/shop_policies.json')
     shoplifty.post('/admin/shop_policies.json', your_payload)
 
+you also can access (some) resources directly (Warning: This does *not* work for all resources, YMMV)
+
+    last_email_template = shoplifty.email_templates.last
+
+    => #<Shoplifty::ShopifyEntity:0x00000001234567
+     @body="Plain text",
+     @body_html="<h1>Look at me, I'm HTML!</h1>",
+     @entity=:email_templates,
+     @id=123456,
+     @include_html=true,
+     @name="Fulfillment Request",
+     @title="Order Fulfillment Request for {{ shop_name }}">
+
+    last_email_template.body = 'This is another plain text'
+    last_email_template.save
+
+As a rule of thumb, everything that is a list of similar items (countries, email_templates etc.) can be accessed this way.
+
 Have a look at what gets sent around in the backend with Firebug or similar tools, the Backend API is pretty straightforward.
 
 The client will create a file called 'cookie_jar' in your app's directory, if you want to have it at another location you can pass in a different filename:
 
-    client.Shoplifty::Client.new('shopname', 'username', 'password', :cookie_jar => 'something/different')
+    shoplifty = Shoplifty.setup('shopname', 'username', 'password', :cookie_jar => 'something/different')
+
 
 ## Contributing
 
