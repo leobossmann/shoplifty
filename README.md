@@ -11,6 +11,8 @@ Couldn't have done it without his work, thanks!
 
 __This is a proof of concept, use at your own risk. It is not officially supported by Shopify, if you break anything it's entirely on you__
 
+__UPDATE 2014-10-31: Shopify changed the backend API, so this README is partly outdated. @SebastianSzturo already fixed the authentication, but I have not yet checked the rest of the functionality. So handle with care.__
+
 ## Installation
 
 Add this line to your application's Gemfile:
