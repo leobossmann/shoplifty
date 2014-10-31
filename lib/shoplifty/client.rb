@@ -20,7 +20,7 @@ module Shoplifty
       admin_page = @agent.get(admin_url)
       
       begin
-        login_page = page.form_with(action: /login/) {|form| form.login = username; form.password = password }.submit
+        login_page = admin_page.form_with(action: /login/) {|form| form.login = username; form.password = password }.submit
       rescue Mechanize::ResponseCodeError => exception
         if exception.response_code == '403'
           login_page = exception.page
