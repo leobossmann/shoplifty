@@ -5,7 +5,7 @@ module Shoplifty
   class Client
     def initialize(shopname, username, password, options = {})
       options = { :cookie_jar => 'cookie_jar' }.merge(options)
-      admin_url = "https://#{shopname}.myshopify.com/admin"
+      admin_url = "https://#{shopname}.myshopify.com/admin/auth/login"
       
       @agent = Mechanize.new
       
@@ -13,18 +13,23 @@ module Shoplifty
         @agent.cookie_jar.load options[:cookie_jar]
       end
 
+      @agent.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10) AppleWebKit/600.1.25 (KHTML, like Gecko) Version/8.0 Safari/600.1.25"
+      @agent.request_headers = { "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" } # Shopify Server checks that
+      @agent.redirect_ok = true
+      
       admin_page = @agent.get(admin_url)
       
-      # if not authorized request will be redirected to '/admin/auth/login'
-      if admin_page.uri.path != '/admin'
-        login_page = @agent.get(admin_url)
-        login_page.form do |login_form|
-          login_form.login = username
-          login_form.password = password
-        end.submit
+      begin
+        login_page = admin_page.form_with(action: /login/) {|form| form.login = username; form.password = password }.submit
+      rescue Mechanize::ResponseCodeError => exception
+        if exception.response_code == '403'
+          login_page = exception.page
+        else
+          raise # Some other error, re-raise
+        end
       end
       
-      auth_token = @agent.get('/admin/2/unsupported_browser_bypass').at('meta[@name="csrf-token"]')[:content]
+      auth_token = Nokogiri::HTML(login_page.body).css("meta[name='csrf-token']").first['content']
       
       @agent.cookie_jar.save_as(options[:cookie_jar], :session => true)
 
