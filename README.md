@@ -37,33 +37,22 @@ Now you can access backend resources:
 
 Have a look at what gets sent around in the backend with Firebug or similar tools, the Backend API is pretty straightforward.
 
-you also can access (some) resources like this (Warning: This does *not* work for all resources, YMMV)
-
-    last_email_template = shoplifty.email_templates.last
-
-    => #<Shoplifty::ShopifyEntity:0x00000001234567
-     @body="Plain text",
-     @body_html="<h1>Look at me, I'm HTML!</h1>",
-     @entity=:email_templates,
-     @id=123456,
-     @include_html=true,
-     @name="Fulfillment Request",
-     @title="Order Fulfillment Request for {{ shop_name }}">
-
-    last_email_template.body = 'This is another plain text'
-    last_email_template.save
-
 As a rule of thumb, everything that is a list of similar items (countries, email_templates etc.) can be accessed this way.
 
 ## Mail Notifications
 
 There is class called "MailNotifications" that provides easy access to shopify's email templates:
 
-    email_templates = Shoplifty::MailNotifications.new
-    email_templates.fulfillment_request.body = 'Test again'
-    email_templates.fulfillment_request.save
+    email_template = Shoplifty::MailNotifications.new('order_confirmation')
+    email_template.title = 'Test'
+    email_template.body_html = 'Test'
+    email_template.save
 
-Mail notifications, as of now, are:
+Some email templates are plain text:
+
+    email_template.body = 'Plain body'
+
+Mail notifications are:
 
 * order_confirmation
 * new_order_notification
@@ -76,6 +65,8 @@ Mail notifications, as of now, are:
 * customer_password_reset
 * customer_account_welcome
 * fulfillment_request
+
+There are other templates, look at the links to them in the Shopify admin.
 
 
 ## Cookie settings
